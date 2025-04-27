@@ -1,0 +1,15 @@
+apt-get install apache2 -y
+cd /var/
+mkdir backup
+
+ssh-keygen -t rsa -b 4096
+ssh-copy-id backup@172.16.208.72
+
+touch /home/eleve/backup.sh
+chmod +x /home/eleve/backup.sh
+
+echo 'tar zcf /var/backup/backup_$(date +%Y.%m.%d).tar.gz /var/www/html' > /home/eleve/backup.sh
+echo 'scp /var/backup/backup_$(date +%Y.%m.%d).tar.gz backup@172.16.208.72:/var/backup' >> /home/eleve/backup.sh
+echo 'rm /var/backup/backup_$(date +%Y.%m.%d).tar.gz' >> /home/eleve/backup.sh
+
+(crontab -l 2>/dev/null; echo "0 5 * * * /home/eleve/backup.sh") | crontab -
